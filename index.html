@@ -590,7 +590,6 @@ textarea{resize:vertical;min-height:70px;}
   </div>
 </div>
 
-<script src="https://apis.google.com/js/api.js"></script>
 <script>
 const CLIENT_ID='353897932429-tid2rqdpnb9cah4e7apa367lv7k4gsqo.apps.googleusercontent.com';
 const SHEET_ID='1bSkSQJHtb1jYYLUMXKr1epFMqfcJ1wNW3MrEmHtoIq4';
@@ -603,29 +602,34 @@ const EP_HEADERS=['id','epnum','title','guest','guestrole','industry','service',
 const TASK_HEADERS=['id','client','text','status','addedAt'];
 const CAMP_HEADERS=['id','client','name','replyRate','status','notes','nextAction','updatedAt'];
 
-let gapiInited=false,tokenClient=null,folderId=null,currentFile=null;
+let gapiReady=false,gisReady=false,tokenClient=null,folderId=null,currentFile=null;
 
 // ---- AUTH ----
-window.onload=()=>{
+function gapiLoaded(){
   gapi.load('client',async()=>{
     await gapi.client.init({discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4','https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']});
-    gapiInited=true;
-    const s=document.createElement('script');
-    s.src='https://accounts.google.com/gsi/client';
-    s.onload=()=>{
-      tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,callback:handleToken});
-      const tok=localStorage.getItem('bn_token');
-      const exp=localStorage.getItem('bn_token_expiry');
-      if(tok&&exp&&Date.now()<parseInt(exp)){
-        gapi.client.setToken({access_token:tok});
-        showApp(localStorage.getItem('bn_email')||'');
-      }
-    };
-    document.head.appendChild(s);
+    gapiReady=true;
+    maybeAutoLogin();
   });
-};
-
-function signIn(){tokenClient.requestAccessToken({prompt:'consent'});}
+}
+function gisLoaded(){
+  tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,callback:handleToken});
+  gisReady=true;
+  maybeAutoLogin();
+}
+function maybeAutoLogin(){
+  if(!gapiReady||!gisReady)return;
+  const tok=localStorage.getItem('bn_token');
+  const exp=localStorage.getItem('bn_token_expiry');
+  if(tok&&exp&&Date.now()<parseInt(exp)){
+    gapi.client.setToken({access_token:tok});
+    showApp(localStorage.getItem('bn_email')||'');
+  }
+}
+function signIn(){
+  if(!tokenClient){alert('Still loading — please wait a moment and try again.');return;}
+  tokenClient.requestAccessToken({prompt:'consent'});
+}
 async function handleToken(resp){
   if(resp.error){showStatus('Auth error: '+resp.error,'err');return;}
   const tok=gapi.client.getToken().access_token;
@@ -1141,5 +1145,7 @@ function openReviewInClaude(mode){
   openClaudeChat(prompt);
 }
 </script>
+<script src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+<script src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
 </body>
 </html>
