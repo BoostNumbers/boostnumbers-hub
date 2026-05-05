@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BoostNumbers.ai — Ops Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0f0f0f;--bg2:#161616;--bg3:#1e1e1e;--bg4:#252525;
+  --border:#2a2a2a;--border2:#363636;
+  --text:#f0ede8;--text2:#9a9690;--text3:#5a5754;
+  --accent:#c8f060;--accent2:#a8d040;
+  --purple:#b8a0f8;--teal:#60d4b0;--amber:#f8c060;--coral:#f87860;--blue:#60a8f8;--pink:#f860b8;
+  --r:8px;--r2:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
+/* Layout */
+.app{display:flex;min-height:100vh;}
+.sidebar{width:224px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.main{flex:1;overflow-y:auto;min-width:0;}
+/* Sidebar */
+.sidebar-logo{padding:24px 20px 18px;border-bottom:1px solid var(--border);}
+.logo-mark{font-family:'Instrument Serif',serif;font-size:19px;color:var(--accent);letter-spacing:-0.5px;}
+.logo-sub{font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;font-family:'DM Mono',monospace;}
+.nav{padding:10px 0;flex:1;overflow-y:auto;}
+.nav-section{font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;padding:14px 20px 5px;font-family:'DM Mono',monospace;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;color:var(--text2);font-size:13px;transition:all 0.15s;border-left:2px solid transparent;user-select:none;}
+.nav-item:hover{color:var(--text);background:var(--bg3);}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(200,240,96,0.06);}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.sidebar-footer{padding:14px 20px;border-top:1px solid var(--border);}
+.user-email{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;word-break:break-all;margin-bottom:8px;}
+/* Auth */
+.auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.auth-card{width:400px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:40px;text-align:center;}
+.auth-logo{font-family:'Instrument Serif',serif;font-size:32px;color:var(--accent);margin-bottom:6px;}
+.auth-sub{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:28px;}
+.auth-desc{font-size:13px;color:var(--text2);margin-bottom:28px;line-height:1.7;}
+.btn-auth{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#0f0f0f;font-weight:500;font-size:13px;padding:12px 24px;border-radius:var(--r);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;}
+.btn-auth:hover{background:var(--accent2);}
+.auth-note{font-size:11px;color:var(--text3);margin-top:18px;font-family:'DM Mono',monospace;}
+/* Page */
+.page{display:none;}
+.page.active{display:block;}
+.page-header{padding:28px 32px 22px;border-bottom:1px solid var(--border);}
+.page-title{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text);letter-spacing:-0.5px;}
+.page-sub{font-size:11px;color:var(--text3);margin-top:4px;font-family:'DM Mono',monospace;}
+.page-body{padding:24px 32px;}
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:24px;}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;}
+.metric-label{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+.metric-value{font-size:26px;font-weight:300;color:var(--text);font-family:'Instrument Serif',serif;}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:3px;}
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px 20px;margin-bottom:10px;transition:border-color 0.15s;}
+.card:hover{border-color:var(--border2);}
+.card-title{font-size:14px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:4px;}
+.card-meta{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:8px;}
+.card-body{font-size:13px;color:var(--text2);line-height:1.6;}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;}
+/* Badges */
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;}
+.badge-insight{background:rgba(184,160,248,0.15);color:var(--purple);}
+.badge-offer{background:rgba(248,192,96,0.15);color:var(--amber);}
+.badge-draft{background:var(--bg3);color:var(--text3);}
+.badge-ready{background:rgba(96,212,176,0.15);color:var(--teal);}
+.badge-scheduled{background:rgba(96,168,248,0.15);color:var(--blue);}
+.badge-active{background:rgba(96,212,176,0.15);color:var(--teal);}
+.badge-paused{background:rgba(248,192,96,0.15);color:var(--amber);}
+.badge-todo{background:var(--bg3);color:var(--text3);}
+.badge-done{background:rgba(96,212,176,0.15);color:var(--teal);}
+/* Pills */
+.pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin:2px 2px 0 0;font-family:'DM Mono',monospace;}
+.pill-purple{background:rgba(184,160,248,0.12);color:var(--purple);}
+.pill-teal{background:rgba(96,212,176,0.12);color:var(--teal);}
+.pill-amber{background:rgba(248,192,96,0.12);color:var(--amber);}
+.pill-blue{background:rgba(96,168,248,0.12);color:var(--blue);}
+.pill-coral{background:rgba(248,120,96,0.12);color:var(--coral);}
+/* Buttons */
+.btn{font-size:12px;padding:6px 13px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;cursor:pointer;color:var(--text2);font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.btn:hover{background:var(--bg3);color:var(--text);}
+.btn-accent{border-color:var(--accent);color:var(--accent);}
+.btn-accent:hover{background:rgba(200,240,96,0.1);}
+.btn-danger{border-color:var(--coral);color:var(--coral);}
+.btn-danger:hover{background:rgba(248,120,96,0.1);}
+.btn-primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500;}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2);}
+.btn-sm{font-size:11px;padding:4px 10px;}
+/* Forms */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.form-label{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.06em;}
+input[type=text],input[type=number],input[type=date],select,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%;outline:none;transition:border-color 0.15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--border2);}
+select option{background:var(--bg3);}
+textarea{resize:vertical;min-height:70px;}
+/* Upload */
+.upload-zone{border:1px dashed var(--border2);border-radius:var(--r2);padding:24px;text-align:center;cursor:pointer;background:var(--bg2);transition:all 0.15s;margin-bottom:18px;}
+.upload-zone:hover{border-color:var(--accent);background:rgba(200,240,96,0.04);}
+/* Status */
+.status-bar{font-size:12px;padding:9px 14px;border-radius:var(--r);margin:12px 32px 0;font-family:'DM Mono',monospace;display:none;}
+.status-ok{background:rgba(96,212,176,0.12);color:var(--teal);border:1px solid rgba(96,212,176,0.2);}
+.status-err{background:rgba(248,120,96,0.12);color:var(--coral);border:1px solid rgba(248,120,96,0.2);}
+.status-info{background:rgba(96,168,248,0.12);color:var(--blue);border:1px solid rgba(96,168,248,0.2);}
+/* Filter row */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+.filter-row select{width:auto;}
+.filter-count{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-left:auto;}
+/* Section label */
+.section-label{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;margin:22px 0 10px;}
+/* Calendar table */
+.cal-wrap{overflow-x:auto;}
+.cal-table{width:100%;border-collapse:collapse;font-size:12px;}
+.cal-table th{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;letter-spacing:0.06em;}
+.cal-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text2);}
+.cal-table tr:last-child td{border-bottom:none;}
+.cal-table tr:hover td{background:var(--bg3);}
+.type-bar-insight{border-left:2px solid var(--purple);padding-left:8px;color:var(--text);}
+.type-bar-offer{border-left:2px solid var(--amber);padding-left:8px;color:var(--text);}
+/* Episode */
+.ep-grid{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:start;}
+.ep-num{font-family:'Instrument Serif',serif;font-size:24px;color:var(--text3);line-height:1;padding-top:2px;}
+/* Tasks */
+.task-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);transition:background 0.1s;}
+.task-row:last-child{border-bottom:none;}
+.task-row:hover{background:var(--bg3);}
+.task-check{width:16px;height:16px;flex-shrink:0;accent-color:var(--accent);cursor:pointer;}
+.task-text{flex:1;font-size:13px;color:var(--text);}
+.task-text.done{text-decoration:line-through;color:var(--text3);}
+.task-client{font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);white-space:nowrap;}
+/* Checklist */
+.checklist-section{margin-bottom:20px;}
+.checklist-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.check-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.check-item:last-child{border-bottom:none;}
+.check-item input{width:15px;height:15px;accent-color:var(--accent);flex-shrink:0;}
+.check-item label{font-size:13px;color:var(--text2);cursor:pointer;flex:1;}
+.check-item input:checked + label{text-decoration:line-through;color:var(--text3);}
+/* Rules */
+.rule-row{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+.rule-row:last-child{border-bottom:none;}
+.rule-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+.rule-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.rule-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+/* Insight box */
+.insight-box{border-left:2px solid var(--purple);padding-left:10px;font-size:12px;color:var(--text2);line-height:1.6;font-style:italic;margin-top:8px;}
+/* Client card header */
+.client-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.client-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:13px;flex-shrink:0;font-family:'DM Mono',monospace;}
+/* Campaign stat */
+.campaign-stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:12px 0;}
+.cstat{background:var(--bg3);border-radius:var(--r);padding:10px 12px;}
+.cstat-label{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:4px;}
+.cstat-value{font-size:18px;font-weight:300;color:var(--text);font-family:'Instrument Serif',serif;}
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+/* Loading / empty */
+.loading{text-align:center;padding:36px;color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;}
+.empty{text-align:center;padding:36px;color:var(--text3);font-size:13px;}
+/* Add task form */
+.add-task-row{display:flex;gap:8px;margin-bottom:16px;}
+.add-task-row input{flex:1;}
+/* Tx preview */
+.tx-preview{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;line-height:1.6;max-height:72px;overflow:hidden;margin-bottom:12px;}
+/* Checklist progress */
+.progress-bar{height:4px;background:var(--bg3);border-radius:2px;margin-bottom:16px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s;}
+.progress-label{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">BoostNumbers.ai</div>
+    <div class="auth-sub">Operations Hub v2</div>
+    <div class="auth-desc">Transcript library, campaigns, client tasks, LinkedIn content, and podcast checklist — all connected to your Google Drive and Sheets.</div>
+    <button class="btn-auth" onclick="signIn()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Sign in with Google
+    </button>
+    <div class="auth-note">Authorised BoostNumbers team members only</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app" style="display:none;">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">BoostNumbers.ai</div>
+      <div class="logo-sub">Ops Hub v2</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)"><div class="nav-dot"></div>Ops dashboard</div>
+      <div class="nav-section">Clients</div>
+      <div class="nav-item" data-page="campaigns" onclick="showPage('campaigns',this)"><div class="nav-dot"></div>Campaign manager</div>
+      <div class="nav-item" data-page="tasks" onclick="showPage('tasks',this)"><div class="nav-dot"></div>Client tasks</div>
+      <div class="nav-section">Content</div>
+      <div class="nav-item" data-page="library" onclick="showPage('library',this)"><div class="nav-dot"></div>Transcript library</div>
+      <div class="nav-item" data-page="upload" onclick="showPage('upload',this)"><div class="nav-dot"></div>Upload + tag</div>
+      <div class="nav-item" data-page="generate" onclick="showPage('generate',this)"><div class="nav-dot"></div>Generate posts</div>
+      <div class="nav-section">Schedule</div>
+      <div class="nav-item" data-page="calendar" onclick="showPage('calendar',this)"><div class="nav-dot"></div>Posting calendar</div>
+      <div class="nav-item" data-page="queue" onclick="showPage('queue',this)"><div class="nav-dot"></div>Post queue</div>
+      <div class="nav-section">Tools</div>
+      <div class="nav-item" data-page="checklist" onclick="showPage('checklist',this)"><div class="nav-dot"></div>Podcast checklist</div>
+      <div class="nav-item" data-page="review" onclick="showPage('review',this)"><div class="nav-dot"></div>Campaign review</div>
+      <div class="nav-item" data-page="rules" onclick="showPage('rules',this)"><div class="nav-dot"></div>Content rules</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-email" id="user-email">—</div>
+      <button class="btn btn-sm" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="status-bar" class="status-bar"></div>
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div class="page-title">Ops dashboard</div>
+        <div class="page-sub">BoostNumbers.ai · Active clients · May 2026</div>
+      </div>
+      <div class="page-body">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Active clients</div><div class="metric-value">3</div></div>
+          <div class="metric"><div class="metric-label">Active campaigns</div><div class="metric-value">3</div></div>
+          <div class="metric"><div class="metric-label">Episodes</div><div class="metric-value" id="dash-eps">—</div><div class="metric-sub">In library</div></div>
+          <div class="metric"><div class="metric-label">Open tasks</div><div class="metric-value" id="dash-tasks">—</div></div>
+        </div>
+        <div class="section-label">Client overview</div>
+        <div class="card">
+          <div class="client-header">
+            <div class="client-avatar" style="background:rgba(184,160,248,0.15);color:var(--purple);">EG</div>
+            <div><div class="card-title">Eye Guardian</div><div class="card-meta">Cold email · LinkedIn content · Healthcare VCs</div></div>
+            <span class="badge badge-active">Active</span>
+          </div>
+          <div class="card-body">Cold email campaign to healthcare VCs via Instantly.ai. LinkedIn content for follower growth and credibility. Audience: investors in preventive health and eye care.</div>
+          <div class="card-actions">
+            <button class="btn btn-accent btn-sm" onclick="showPage('campaigns',document.querySelector('[data-page=campaigns]'))">View campaign ↗</button>
+            <button class="btn btn-sm" onclick="showPage('tasks',document.querySelector('[data-page=tasks]'))">View tasks ↗</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="client-header">
+            <div class="client-avatar" style="background:rgba(96,212,176,0.15);color:var(--teal);">KI</div>
+            <div><div class="card-title">Keralink International</div><div class="card-meta">Cold email · Grant foundations</div></div>
+            <span class="badge badge-active">Active</span>
+          </div>
+          <div class="card-body">Cold email campaign targeting grant foundations via Instantly.ai. Outreach focused on securing research and development funding.</div>
+          <div class="card-actions">
+            <button class="btn btn-accent btn-sm" onclick="showPage('campaigns',document.querySelector('[data-page=campaigns]'))">View campaign ↗</button>
+            <button class="btn btn-sm" onclick="showPage('tasks',document.querySelector('[data-page=tasks]'))">View tasks ↗</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="client-header">
+            <div class="client-avatar" style="background:rgba(248,192,96,0.15);color:var(--amber);">UL</div>
+            <div><div class="card-title">Urban Liquor Store</div><div class="card-meta">Social media · Content creation · Kelowna BC</div></div>
+            <span class="badge badge-active">Active</span>
+          </div>
+          <div class="card-body">Social media test campaign for local Kelowna audience. Content creation, follower growth, and platform strategy. Discovery call in progress.</div>
+          <div class="card-actions">
+            <button class="btn btn-accent btn-sm" onclick="showPage('campaigns',document.querySelector('[data-page=campaigns]'))">View campaign ↗</button>
+            <button class="btn btn-sm" onclick="showPage('tasks',document.querySelector('[data-page=tasks]'))">View tasks ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGNS -->
+    <div id="page-campaigns" class="page">
+      <div class="page-header">
+        <div class="page-title">Campaign manager</div>
+        <div class="page-sub">Reply rates · notes · next actions · persisted to Sheets</div>
+      </div>
+      <div class="page-body">
+        <div id="campaign-list"><div class="loading">Loading campaigns...</div></div>
+        <div class="section-label">Add / update campaign note</div>
+        <div class="card">
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Client</div>
+              <select id="camp-client">
+                <option value="">Select client...</option>
+                <option value="Eye Guardian">Eye Guardian</option>
+                <option value="Keralink International">Keralink International</option>
+                <option value="Urban Liquor Store">Urban Liquor Store</option>
+              </select>
+            </div>
+            <div class="form-group"><div class="form-label">Campaign name</div><input type="text" id="camp-name" placeholder="e.g. Healthcare VC outreach May"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Reply rate %</div><input type="number" id="camp-reply" placeholder="e.g. 4.2" min="0" max="100" step="0.1"></div>
+            <div class="form-group"><div class="form-label">Status</div>
+              <select id="camp-status">
+                <option value="active">Active</option>
+                <option value="paused">Paused</option>
+                <option value="complete">Complete</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><div class="form-label">Notes</div><textarea id="camp-notes" placeholder="What's working, what's not, key observations..."></textarea></div>
+          <div class="form-group"><div class="form-label">Next action</div><input type="text" id="camp-next" placeholder="e.g. A/B test subject line, review bounce rate"></div>
+          <button class="btn btn-primary" onclick="saveCampaign()">Save campaign</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div id="page-tasks" class="page">
+      <div class="page-header">
+        <div class="page-title">Client tasks</div>
+        <div class="page-sub">Per client · persistent · add · complete · delete</div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Add task</div>
+        <div class="add-task-row">
+          <select id="task-client" style="width:180px;flex-shrink:0;">
+            <option value="">Client...</option>
+            <option value="Eye Guardian">Eye Guardian</option>
+            <option value="Keralink International">Keralink International</option>
+            <option value="Urban Liquor Store">Urban Liquor Store</option>
+            <option value="BoostNumbers.ai">BoostNumbers.ai</option>
+          </select>
+          <input type="text" id="task-text" placeholder="Task description..." onkeydown="if(event.key==='Enter')addTask()">
+          <button class="btn btn-primary" onclick="addTask()">Add</button>
+        </div>
+        <div class="filter-row">
+          <select id="task-filter-client" onchange="renderTasks()">
+            <option value="">All clients</option>
+            <option value="Eye Guardian">Eye Guardian</option>
+            <option value="Keralink International">Keralink International</option>
+            <option value="Urban Liquor Store">Urban Liquor Store</option>
+            <option value="BoostNumbers.ai">BoostNumbers.ai</option>
+          </select>
+          <select id="task-filter-status" onchange="renderTasks()">
+            <option value="">All</option>
+            <option value="todo">To do</option>
+            <option value="done">Done</option>
+          </select>
+          <span class="filter-count" id="task-count"></span>
+        </div>
+        <div id="task-list" style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;"></div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div id="page-library" class="page">
+      <div class="page-header">
+        <div class="page-title">Transcript library</div>
+        <div class="page-sub">Google Drive + Sheets · persistent · cross-episode intelligence</div>
+      </div>
+      <div class="page-body">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Episodes</div><div class="metric-value" id="m-eps">—</div></div>
+          <div class="metric"><div class="metric-label">Roles</div><div class="metric-value" id="m-roles">—</div></div>
+          <div class="metric"><div class="metric-label">Industries</div><div class="metric-value" id="m-inds">—</div></div>
+          <div class="metric"><div class="metric-label">Services</div><div class="metric-value" id="m-svcs">—</div></div>
+        </div>
+        <div class="filter-row">
+          <select id="f-role" onchange="renderLibrary()"><option value="">All roles</option></select>
+          <select id="f-industry" onchange="renderLibrary()"><option value="">All industries</option></select>
+          <select id="f-service" onchange="renderLibrary()"><option value="">All services</option></select>
+          <select id="f-topic" onchange="renderLibrary()"><option value="">All topics</option></select>
+          <span class="filter-count" id="lib-count"></span>
+        </div>
+        <div id="library-list"><div class="loading">Loading library...</div></div>
+      </div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div id="page-upload" class="page">
+      <div class="page-header">
+        <div class="page-title">Upload + tag</div>
+        <div class="page-sub">Riverside.fm .txt · saves to Drive + Sheets</div>
+      </div>
+      <div class="page-body">
+        <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+          <div style="font-size:14px;color:var(--text2);margin-bottom:4px;">Click to upload .txt transcript</div>
+          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">Riverside.fm export · plain text · any size</div>
+          <input type="file" id="file-input" accept=".txt" style="display:none;" onchange="handleFile(this)">
+        </div>
+        <div id="file-preview" style="display:none;">
+          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;" id="file-name-display"></div>
+          <div class="tx-preview" id="tx-preview-text"></div>
+        </div>
+        <div class="section-label">Episode details</div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">Episode number</div><input type="number" id="f-epnum" placeholder="1" min="1"></div>
+          <div class="form-group"><div class="form-label">Episode title</div><input type="text" id="f-eptitle" placeholder="e.g. Cold email isn't dead"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">Guest name</div><input type="text" id="f-guest" placeholder="e.g. Jane Smith"></div>
+          <div class="form-group"><div class="form-label">Guest role</div>
+            <select id="f-guestrole">
+              <option value="">Select role...</option>
+              <option>Founder / CEO</option><option>Marketing director</option><option>Sales leader</option>
+              <option>Operations manager</option><option>Small business owner</option><option>Consultant / coach</option>
+              <option>Investor / VC</option><option>Agency owner</option><option>Content creator</option>
+              <option>Solo operator</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">Industry</div>
+            <select id="f-ind">
+              <option value="">Select industry...</option>
+              <option>Healthcare</option><option>Real estate</option><option>Professional services</option>
+              <option>Retail / e-commerce</option><option>Food & beverage</option><option>Technology / SaaS</option>
+              <option>Finance / accounting</option><option>Construction / trades</option><option>Creative / media</option>
+              <option>Education / coaching</option><option>Hospitality / tourism</option><option>Non-profit</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group"><div class="form-label">Primary service angle</div>
+            <select id="f-svc">
+              <option value="">Select service...</option>
+              <option>Podcast production</option><option>Content creation</option><option>AI tools with Claude</option>
+              <option>Cold email campaigns</option><option>LinkedIn growth</option><option>All services</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><div class="form-label">Key topics (comma-separated)</div><input type="text" id="f-topics" placeholder="e.g. lead generation, automation, content repurposing"></div>
+        <div class="form-group"><div class="form-label">Core insight</div><textarea id="f-insight" placeholder="What's the single most useful thing a small business owner can take from this episode?"></textarea></div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn btn-primary" onclick="saveEpisode()">Save to library</button>
+          <button class="btn" onclick="clearUploadForm()">Clear</button>
+          <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;" id="save-progress"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERATE -->
+    <div id="page-generate" class="page">
+      <div class="page-header">
+        <div class="page-title">Generate posts</div>
+        <div class="page-sub">Select episodes · synthesize across guests · open in Claude</div>
+      </div>
+      <div class="page-body">
+        <div class="filter-row">
+          <select id="g-role" onchange="renderGenList()"><option value="">All roles</option></select>
+          <select id="g-industry" onchange="renderGenList()"><option value="">All industries</option></select>
+          <select id="g-service" onchange="renderGenList()"><option value="">All services</option></select>
+        </div>
+        <div id="gen-list"><div class="loading">Loading episodes...</div></div>
+        <div class="section-label">Post settings</div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">Post type</div>
+            <select id="g-posttype">
+              <option value="insight">Insight post (Wk 1 or 3 Tuesday)</option>
+              <option value="offer">Offer post (Q3 / Q4)</option>
+              <option value="clip">Clip caption (Riverside short)</option>
+            </select>
+          </div>
+          <div class="form-group"><div class="form-label">Service to lead to</div>
+            <select id="g-leadsvc">
+              <option value="">Auto — from selection</option>
+              <option>Podcast production</option><option>Content creation</option><option>AI tools with Claude</option>
+              <option>Cold email campaigns</option><option>LinkedIn growth</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><div class="form-label">Angle or focus (optional)</div><input type="text" id="g-angle" placeholder="e.g. what founders in healthcare say about lead gen"></div>
+        <button class="btn btn-primary" onclick="generatePost()">Generate LinkedIn post with Claude ↗</button>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div id="page-calendar" class="page">
+      <div class="page-header">
+        <div class="page-title">Posting calendar</div>
+        <div class="page-sub">BoostNumbers.ai own channel · 2025–2026</div>
+      </div>
+      <div class="page-body">
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Insight / month</div><div class="metric-value">2</div><div class="metric-sub">Wk 1 + Wk 3 Tue</div></div>
+          <div class="metric"><div class="metric-label">Offer / quarter</div><div class="metric-value">1</div><div class="metric-sub">Jul · Oct</div></div>
+          <div class="metric"><div class="metric-label">Next post</div><div class="metric-value" style="font-size:15px;margin-top:6px;">Jun 3</div></div>
+          <div class="metric"><div class="metric-label">Next type</div><div class="metric-value" style="font-size:15px;margin-top:6px;">Insight</div></div>
+        </div>
+        <div class="cal-wrap">
+          <table class="cal-table">
+            <thead><tr><th>Date</th><th>Week</th><th>Type</th><th>Service angle</th><th>Status</th><th></th></tr></thead>
+            <tbody id="cal-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUEUE -->
+    <div id="page-queue" class="page">
+      <div class="page-header">
+        <div class="page-title">Post queue</div>
+        <div class="page-sub">Drafts · ready · scheduled · BoostNumbers.ai channel</div>
+      </div>
+      <div class="page-body">
+        <div class="filter-row">
+          <select id="q-type" onchange="renderQueue()"><option value="all">All types</option><option value="insight">Insight</option><option value="offer">Offer</option></select>
+          <select id="q-status" onchange="renderQueue()"><option value="all">All statuses</option><option value="draft">Draft</option><option value="ready">Ready</option><option value="scheduled">Scheduled</option></select>
+        </div>
+        <div id="queue-list"></div>
+      </div>
+    </div>
+
+    <!-- PODCAST CHECKLIST -->
+    <div id="page-checklist" class="page">
+      <div class="page-header">
+        <div class="page-title">Podcast repurposing checklist</div>
+        <div class="page-sub">Per episode · transcript to published content</div>
+      </div>
+      <div class="page-body">
+        <div class="form-row" style="margin-bottom:20px;">
+          <div class="form-group"><div class="form-label">Episode</div>
+            <select id="cl-episode" onchange="loadChecklist()">
+              <option value="">Select episode...</option>
+            </select>
+          </div>
+          <div class="form-group" style="justify-content:flex-end;padding-top:18px;">
+            <button class="btn btn-accent" onclick="resetChecklist()">Reset checklist</button>
+          </div>
+        </div>
+        <div id="checklist-progress" style="display:none;">
+          <div class="progress-label" id="cl-progress-label">0 of 12 complete</div>
+          <div class="progress-bar"><div class="progress-fill" id="cl-progress-fill" style="width:0%"></div></div>
+        </div>
+        <div id="checklist-body"></div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGN REVIEW -->
+    <div id="page-review" class="page">
+      <div class="page-header">
+        <div class="page-title">Campaign review</div>
+        <div class="page-sub">Structured review template · per client · open in Claude</div>
+      </div>
+      <div class="page-body">
+        <div class="form-group"><div class="form-label">Client</div>
+          <select id="rev-client">
+            <option value="">Select client...</option>
+            <option>Eye Guardian</option><option>Keralink International</option><option>Urban Liquor Store</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><div class="form-label">Review period</div><input type="text" id="rev-period" placeholder="e.g. May 2026"></div>
+          <div class="form-group"><div class="form-label">Campaign type</div>
+            <select id="rev-type">
+              <option>Cold email</option><option>Social media</option><option>LinkedIn content</option><option>Full service</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><div class="form-label">Reply rate / engagement rate</div><input type="text" id="rev-rate" placeholder="e.g. 4.2% reply rate"></div>
+        <div class="form-group"><div class="form-label">What worked</div><textarea id="rev-worked" placeholder="Sequences, messaging, timing, targeting..."></textarea></div>
+        <div class="form-group"><div class="form-label">What didn't work</div><textarea id="rev-didnt" placeholder="Bounce rates, low engagement, wrong audience..."></textarea></div>
+        <div class="form-group"><div class="form-label">Client feedback</div><textarea id="rev-feedback" placeholder="Notes from last call or message..."></textarea></div>
+        <div class="form-group"><div class="form-label">Recommended next steps</div><textarea id="rev-next" placeholder="Changes to make, tests to run, services to add..."></textarea></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="openReviewInClaude()">Open full review in Claude ↗</button>
+          <button class="btn btn-accent" onclick="openReviewInClaude('recommendations')">Get recommendations ↗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RULES -->
+    <div id="page-rules" class="page">
+      <div class="page-header">
+        <div class="page-title">Content rules</div>
+        <div class="page-sub">Strategy · tone · structure · cadence</div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Post types</div>
+        <div class="rule-row"><div class="rule-dot" style="background:var(--purple);"></div><div><div class="rule-title">Insight post</div><div class="rule-desc">2× per month · Week 1 + Week 3 Tuesday · Drawn from podcast transcripts or service expertise · Audience-first, no hard sell · Ends with a soft CTA</div></div></div>
+        <div class="rule-row"><div class="rule-dot" style="background:var(--amber);"></div><div><div class="rule-title">Offer post</div><div class="rule-desc">1× per quarter · Q3 = July · Q4 = October · Lead with a business outcome · One service per post · Clear CTA: book a call or reply</div></div></div>
+        <div class="section-label">Strategy</div>
+        <div class="rule-row"><div class="rule-dot" style="background:var(--teal);"></div><div><div class="rule-title">Goal is client acquisition</div><div class="rule-desc">Every post should make a small business owner think "I need this." The podcast is a credibility engine — not the product being promoted.</div></div></div>
+        <div class="rule-row"><div class="rule-dot" style="background:var(--teal);"></div><div><div class="rule-title">Audience</div><div class="rule-desc">Small business owners, founders, entrepreneurs. Pain points: no time, no team, need leads, need content, want to look professional online.</div></div></div>
+        <div class="rule-row"><div class="rule-dot" style="background:var(--teal);"></div><div><div class="rule-title">Tone</div><div class="rule-desc">Peer-to-peer. Direct. No jargon. First-person. Founder talking to founder — not an agency pitching.</div></div></div>
+        <div class="rule-row"><div class="rule-dot" style="background:var(--teal);"></div><div><div class="rule-title">Post structure</div><div class="rule-desc">Hook (stops the scroll) → 3–5 lines of insight → one takeaway → soft CTA. No walls of text.</div></div></div>
+        <div class="rule-row"><div class="rule-dot" style="background:var(--teal);"></div><div><div class="rule-title">Services to rotate</div><div class="rule-desc"><span class="pill pill-purple">Podcast production</span><span class="pill pill-teal">Content creation</span><span class="pill pill-amber">AI tools with Claude</span><span class="pill pill-blue">Cold email campaigns</span><span class="pill pill-coral">LinkedIn growth</span></div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+const CLIENT_ID='353897932429-tid2rqdpnb9cah4e7apa367lv7k4gsqo.apps.googleusercontent.com';
+const SHEET_ID='1bSkSQJHtb1jYYLUMXKr1epFMqfcJ1wNW3MrEmHtoIq4';
+const FOLDER_NAME='BoostNumbers-Transcripts';
+const SCOPES='https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets';
+const EP_SHEET='Episodes';
+const TASK_SHEET='Tasks';
+const CAMP_SHEET='Campaigns';
+const EP_HEADERS=['id','epnum','title','guest','guestrole','industry','service','topics','insight','transcriptSnippet','driveFileId','addedAt'];
+const TASK_HEADERS=['id','client','text','status','addedAt'];
+const CAMP_HEADERS=['id','client','name','replyRate','status','notes','nextAction','updatedAt'];
+
+let gapiInited=false,tokenClient=null,folderId=null,currentFile=null;
+
+// ---- AUTH ----
+window.onload=()=>{
+  gapi.load('client',async()=>{
+    await gapi.client.init({discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4','https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']});
+    gapiInited=true;
+    const s=document.createElement('script');
+    s.src='https://accounts.google.com/gsi/client';
+    s.onload=()=>{
+      tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPES,callback:handleToken});
+      const tok=localStorage.getItem('bn_token');
+      const exp=localStorage.getItem('bn_token_expiry');
+      if(tok&&exp&&Date.now()<parseInt(exp)){
+        gapi.client.setToken({access_token:tok});
+        showApp(localStorage.getItem('bn_email')||'');
+      }
+    };
+    document.head.appendChild(s);
+  });
+};
+
+function signIn(){tokenClient.requestAccessToken({prompt:'consent'});}
+async function handleToken(resp){
+  if(resp.error){showStatus('Auth error: '+resp.error,'err');return;}
+  const tok=gapi.client.getToken().access_token;
+  localStorage.setItem('bn_token',tok);
+  localStorage.setItem('bn_token_expiry',Date.now()+(resp.expires_in||3600)*1000);
+  try{
+    const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+tok}});
+    const d=await r.json();
+    localStorage.setItem('bn_email',d.email||'');
+    showApp(d.email||'');
+  }catch(e){showApp('');}
+}
+function signOut(){
+  const t=gapi.client.getToken();
+  if(t)google.accounts.oauth2.revoke(t.access_token,()=>{});
+  gapi.client.setToken('');
+  ['bn_token','bn_token_expiry','bn_email'].forEach(k=>localStorage.removeItem(k));
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+async function showApp(email){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('user-email').textContent=email;
+  await ensureSheets();
+  renderDashboard();renderLibrary();renderCalendar();renderQueue();renderCampaigns();renderTasks();populateChecklistEpisodes();
+}
+
+// ---- SHEETS INIT ----
+async function ensureSheets(){
+  const sheets=[{name:EP_SHEET,headers:EP_HEADERS},{name:TASK_SHEET,headers:TASK_HEADERS},{name:CAMP_SHEET,headers:CAMP_HEADERS}];
+  for(const s of sheets){
+    try{
+      const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:s.name+'!1:1'});
+      if(!r.result.values||!r.result.values[0]||r.result.values[0].length===0)
+        await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SHEET_ID,range:s.name+'!A1',valueInputOption:'RAW',resource:{values:[s.headers]}});
+    }catch(e){
+      try{
+        await gapi.client.sheets.spreadsheets.batchUpdate({spreadsheetId:SHEET_ID,resource:{requests:[{addSheet:{properties:{title:s.name}}}]}});
+        await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SHEET_ID,range:s.name+'!A1',valueInputOption:'RAW',resource:{values:[s.headers]}});
+      }catch(e2){}
+    }
+  }
+}
+
+// ---- GENERIC SHEET OPS ----
+async function getRows(sheetName,headers){
+  try{
+    const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:sheetName+'!A:'+String.fromCharCode(64+headers.length)});
+    const rows=r.result.values||[];
+    if(rows.length<=1)return[];
+    return rows.slice(1).map(row=>{
+      const obj={};
+      headers.forEach((h,i)=>obj[h]=row[i]||'');
+      return obj;
+    }).filter(o=>o.id);
+  }catch(e){showStatus('Load error: '+e.message,'err');return[];}
+}
+async function appendRow(sheetName,headers,obj){
+  const row=headers.map(h=>obj[h]!==undefined?obj[h]:'');
+  await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:SHEET_ID,range:sheetName+'!A1',valueInputOption:'RAW',insertDataOption:'INSERT_ROWS',resource:{values:[row]}});
+}
+async function updateRow(sheetName,headers,id,updates){
+  const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:sheetName+'!A:A'});
+  const rows=r.result.values||[];
+  const idx=rows.findIndex((r,i)=>i>0&&r[0]===id);
+  if(idx<0)return;
+  const existing=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:sheetName+'!'+(idx+1)+':'+(idx+1)});
+  const row=(existing.result.values||[[]])[0]||[];
+  headers.forEach((h,i)=>{if(updates[h]!==undefined)row[i]=updates[h];});
+  await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:SHEET_ID,range:sheetName+'!A'+(idx+1),valueInputOption:'RAW',resource:{values:[row]}});
+}
+async function deleteRow(sheetName,id){
+  const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:SHEET_ID,range:sheetName+'!A:A'});
+  const rows=r.result.values||[];
+  const rowIdx=rows.findIndex((r,i)=>i>0&&r[0]===id);
+  if(rowIdx<0)return;
+  const meta=await gapi.client.sheets.spreadsheets.get({spreadsheetId:SHEET_ID});
+  const sheet=meta.result.sheets.find(s=>s.properties.title===sheetName);
+  if(!sheet)return;
+  await gapi.client.sheets.spreadsheets.batchUpdate({spreadsheetId:SHEET_ID,resource:{requests:[{deleteDimension:{range:{sheetId:sheet.properties.sheetId,dimension:'ROWS',startIndex:rowIdx,endIndex:rowIdx+1}}}]}});
+}
+
+// ---- DRIVE ----
+async function getOrCreateFolder(){
+  if(folderId)return folderId;
+  try{
+    const r=await gapi.client.drive.files.list({q:`name='${FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+    if(r.result.files&&r.result.files.length>0){folderId=r.result.files[0].id;return folderId;}
+    const c=await gapi.client.drive.files.create({resource:{name:FOLDER_NAME,mimeType:'application/vnd.google-apps.folder'},fields:'id'});
+    folderId=c.result.id;return folderId;
+  }catch(e){showStatus('Drive error: '+e.message,'err');return null;}
+}
+async function uploadToDrive(filename,content){
+  const folder=await getOrCreateFolder();
+  if(!folder)return null;
+  try{
+    const tok=gapi.client.getToken().access_token;
+    const meta=JSON.stringify({name:filename,parents:[folder]});
+    const form=new FormData();
+    form.append('metadata',new Blob([meta],{type:'application/json'}));
+    form.append('file',new Blob([content],{type:'text/plain'}));
+    const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{Authorization:'Bearer '+tok},body:form});
+    const d=await r.json();
+    return d.id||null;
+  }catch(e){showStatus('Upload error: '+e.message,'err');return null;}
+}
+
+// ---- HELPERS ----
+function unique(arr){return[...new Set(arr.filter(Boolean))].sort();}
+function esc(s){return(s||'').replace(/'/g,"\\'").replace(/\n/g,' ').substring(0,200);}
+function openClaudeChat(prompt){window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');}
+function showStatus(msg,type='ok'){
+  const el=document.getElementById('status-bar');
+  el.className='status-bar status-'+type;
+  el.textContent=msg;el.style.display='block';
+  setTimeout(()=>el.style.display='none',4000);
+}
+function showPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  if(name==='generate'){getEpisodes().then(eps=>{populateLibFilters(eps);renderGenList();});}
+  if(name==='library')renderLibrary();
+  if(name==='tasks')renderTasks();
+  if(name==='campaigns')renderCampaigns();
+}
+
+// ---- DASHBOARD ----
+async function renderDashboard(){
+  const eps=await getEpisodes();
+  const tasks=await getRows(TASK_SHEET,TASK_HEADERS);
+  document.getElementById('dash-eps').textContent=eps.length;
+  document.getElementById('dash-tasks').textContent=tasks.filter(t=>t.status==='todo').length;
+}
+
+// ---- EPISODES ----
+async function getEpisodes(){
+  const rows=await getRows(EP_SHEET,EP_HEADERS);
+  return rows.map(e=>({...e,epnum:parseInt(e.epnum)||0,topics:(e.topics||'').split(',').map(t=>t.trim()).filter(Boolean)}));
+}
+function populateLibFilters(episodes){
+  const roles=unique(episodes.map(e=>e.guestrole));
+  const inds=unique(episodes.map(e=>e.industry));
+  const svcs=unique(episodes.map(e=>e.service));
+  const topics=unique(episodes.flatMap(e=>e.topics));
+  [['f-role','g-role'],['f-industry','g-industry'],['f-service','g-service']].forEach(([a,b])=>{
+    const vals=a.includes('role')?roles:a.includes('industry')?inds:svcs;
+    const label=a.includes('role')?'All roles':a.includes('industry')?'All industries':'All services';
+    [a,b].forEach(id=>{
+      const el=document.getElementById(id);if(!el)return;
+      const cur=el.value;
+      el.innerHTML=`<option value="">${label}</option>`+vals.map(v=>`<option${v===cur?' selected':''}>${v}</option>`).join('');
+    });
+  });
+  const topEl=document.getElementById('f-topic');
+  if(topEl)topEl.innerHTML='<option value="">All topics</option>'+topics.map(t=>`<option>${t}</option>`).join('');
+  document.getElementById('m-eps').textContent=episodes.length;
+  document.getElementById('m-roles').textContent=roles.length;
+  document.getElementById('m-inds').textContent=inds.length;
+  document.getElementById('m-svcs').textContent=svcs.length;
+}
+function applyFilters(episodes,roleId,indId,svcId,topicId){
+  const role=document.getElementById(roleId)?.value||'';
+  const ind=document.getElementById(indId)?.value||'';
+  const svc=document.getElementById(svcId)?.value||'';
+  const topic=topicId?document.getElementById(topicId)?.value||'':'';
+  return episodes.filter(e=>(!role||e.guestrole===role)&&(!ind||e.industry===ind)&&(!svc||e.service===svc)&&(!topic||e.topics.includes(topic)));
+}
+async function renderLibrary(){
+  document.getElementById('library-list').innerHTML='<div class="loading">Loading...</div>';
+  const episodes=await getEpisodes();
+  populateLibFilters(episodes);
+  const filtered=applyFilters(episodes,'f-role','f-industry','f-service','f-topic');
+  document.getElementById('lib-count').textContent=filtered.length+' of '+episodes.length+' episodes';
+  if(!filtered.length){document.getElementById('library-list').innerHTML='<div class="empty">'+(episodes.length?'No episodes match this filter.':'No episodes yet. Go to Upload + tag to add your first transcript.')+'</div>';return;}
+  document.getElementById('library-list').innerHTML=filtered.map(ep=>`
+    <div class="card">
+      <div class="ep-grid">
+        <div class="ep-num">${ep.epnum}</div>
+        <div>
+          <div class="card-title">${ep.title}</div>
+          <div class="card-meta">${ep.guest?ep.guest+' · ':''}${ep.guestrole}${ep.industry?' · '+ep.industry:''} · ${ep.addedAt}</div>
+          <div><span class="pill pill-amber">${ep.service}</span>${ep.topics.map(t=>`<span class="pill pill-blue">${t}</span>`).join('')}</div>
+          ${ep.insight?`<div class="insight-box">${ep.insight}</div>`:''}
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteEpisode('${ep.id}')">Remove</button>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-accent btn-sm" onclick="openClaudeChat('Write a LinkedIn insight post for BoostNumbers.ai based on podcast episode ${ep.epnum}: \'${esc(ep.title)}\'. Guest role: ${esc(ep.guestrole)}. Industry: ${esc(ep.industry)}. Core insight: ${esc(ep.insight)}. Service to lead to: ${esc(ep.service)}. Audience: small business owners and founders. Tone: peer-to-peer founder, direct, no jargon. Structure: scroll-stopping hook + 3-4 lines of insight + one takeaway + soft CTA. Goal: client acquisition.')">Write post ↗</button>
+        <button class="btn btn-sm" onclick="openClaudeChat('Give me 5 LinkedIn hook options for BoostNumbers.ai based on episode ${ep.epnum}: \'${esc(ep.title)}\'. Audience: small business owners. Each hook should be one punchy line that stops the scroll.')">Hooks ↗</button>
+        <button class="btn btn-sm" onclick="openClaudeChat('Extract the top 3 quotable insights from BoostNumbers.ai podcast episode ${ep.epnum}: \'${esc(ep.title)}\'. Guest: ${esc(ep.guest)}, ${esc(ep.guestrole)}. Insight: ${esc(ep.insight)}. Make each quotable as a standalone LinkedIn pull quote.')">Quotes ↗</button>
+        ${ep.driveFileId?`<a href="https://drive.google.com/file/d/${ep.driveFileId}/view" target="_blank" class="btn btn-sm">View transcript ↗</a>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+async function deleteEpisode(id){
+  if(!confirm('Remove this episode from the library?'))return;
+  await deleteRow(EP_SHEET,id);
+  showStatus('Episode removed.','info');
+  renderLibrary();renderDashboard();
+}
+
+// ---- UPLOAD ----
+function handleFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    currentFile={name:file.name,content:text};
+    document.getElementById('file-name-display').textContent=file.name+' · '+Math.round(text.length/1000)+'k chars';
+    document.getElementById('tx-preview-text').textContent=text.substring(0,300)+(text.length>300?'...':'');
+    document.getElementById('file-preview').style.display='block';
+    if(!document.getElementById('f-eptitle').value)document.getElementById('f-eptitle').value=file.name.replace('.txt','').replace(/[-_]/g,' ');
+  };
+  reader.readAsText(file);
+}
+async function saveEpisode(){
+  const epnum=document.getElementById('f-epnum').value;
+  const title=document.getElementById('f-eptitle').value;
+  const guestrole=document.getElementById('f-guestrole').value;
+  const industry=document.getElementById('f-ind').value;
+  const service=document.getElementById('f-svc').value;
+  if(!epnum||!title||!guestrole||!industry||!service){showStatus('Fill in episode number, title, role, industry, and service.','err');return;}
+  const prog=document.getElementById('save-progress');
+  prog.textContent='Uploading to Drive...';
+  let driveFileId='';
+  if(currentFile){
+    driveFileId=await uploadToDrive(`ep${epnum}-${title.substring(0,40).replace(/[^a-z0-9]/gi,'-')}.txt`,currentFile.content)||'';
+    prog.textContent='Saved to Drive. Writing to Sheet...';
+  }else{prog.textContent='Saving to Sheet...';}
+  const ep={
+    id:'ep_'+Date.now(),epnum:parseInt(epnum),title,
+    guest:document.getElementById('f-guest').value,
+    guestrole,industry,service,
+    topics:(document.getElementById('f-topics').value||'').split(',').map(t=>t.trim()).filter(Boolean).join(', '),
+    insight:document.getElementById('f-insight').value,
+    transcriptSnippet:currentFile?currentFile.content.substring(0,500):'',
+    driveFileId,addedAt:new Date().toISOString().split('T')[0]
+  };
+  try{
+    await appendRow(EP_SHEET,EP_HEADERS,ep);
+    showStatus('Episode '+epnum+' saved to library.','ok');
+    prog.textContent='';clearUploadForm();renderDashboard();
+    populateChecklistEpisodes();
+  }catch(e){showStatus('Sheet error: '+e.message,'err');prog.textContent='';}
+}
+function clearUploadForm(){
+  ['f-epnum','f-eptitle','f-guest','f-topics','f-insight'].forEach(id=>document.getElementById(id).value='');
+  ['f-guestrole','f-ind','f-svc'].forEach(id=>document.getElementById(id).selectedIndex=0);
+  document.getElementById('file-preview').style.display='none';
+  document.getElementById('file-input').value='';
+  currentFile=null;
+}
+
+// ---- GENERATE ----
+async function renderGenList(){
+  const episodes=await getEpisodes();
+  populateLibFilters(episodes);
+  const filtered=applyFilters(episodes,'g-role','g-industry','g-service',null);
+  if(!filtered.length){document.getElementById('gen-list').innerHTML='<div class="empty">No episodes match. Adjust filters or upload more transcripts.</div>';return;}
+  document.getElementById('gen-list').innerHTML='<div style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;">'+filtered.map(ep=>`
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border);">
+      <input type="checkbox" id="chk-${ep.id}" value="${ep.id}" checked style="margin-top:3px;accent-color:var(--accent);">
+      <div style="flex:1;">
+        <div style="font-size:13px;color:var(--text);"><strong>Ep. ${ep.epnum}</strong> — ${ep.title}</div>
+        <div style="margin-top:4px;"><span class="pill pill-purple">${ep.guestrole}</span><span class="pill pill-teal">${ep.industry}</span><span class="pill pill-amber">${ep.service}</span></div>
+      </div>
+    </div>
+  `).join('')+'</div>';
+}
+async function generatePost(){
+  const episodes=await getEpisodes();
+  const checked=[...document.querySelectorAll('#gen-list input[type=checkbox]:checked')].map(c=>c.value);
+  if(!checked.length){showStatus('Select at least one episode.','err');return;}
+  const selected=episodes.filter(e=>checked.includes(e.id));
+  const postType=document.getElementById('g-posttype').value;
+  const leadSvc=document.getElementById('g-leadsvc').value;
+  const angle=document.getElementById('g-angle').value;
+  const epSummary=selected.map(e=>`Ep.${e.epnum} "${e.title}" (${e.guestrole}, ${e.industry}): ${e.insight||'No insight stored.'}`).join(' | ');
+  const svcLine=leadSvc||selected.map(e=>e.service).filter((v,i,a)=>a.indexOf(v)===i).join(', ');
+  const ptLabel=postType==='insight'?'insight post (Week 1 or 3 Tuesday)':postType==='offer'?'offer post (Q3/Q4)':'clip caption for a Riverside short video';
+  const prompt=`Write a LinkedIn ${ptLabel} for BoostNumbers.ai drawing from these ${selected.length} podcast episode(s): ${epSummary}.${angle?' Specific angle: '+angle+'.':''} Service to lead to: ${svcLine}. Audience: small business owners, founders, entrepreneurs. Tone: peer-to-peer founder, direct, no jargon. Structure: scroll-stopping hook + insight + takeaway + soft CTA. Goal: client acquisition, not podcast growth.`;
+  openClaudeChat(prompt);
+}
+
+// ---- CAMPAIGNS ----
+async function renderCampaigns(){
+  const camps=await getRows(CAMP_SHEET,CAMP_HEADERS);
+  const defaults=[
+    {id:'camp_eg',client:'Eye Guardian',name:'Healthcare VC outreach',replyRate:'',status:'active',notes:'',nextAction:'',updatedAt:''},
+    {id:'camp_ki',client:'Keralink International',name:'Grant foundation outreach',replyRate:'',status:'active',notes:'',nextAction:'',updatedAt:''},
+    {id:'camp_ul',client:'Urban Liquor Store',name:'Social media test campaign',replyRate:'',status:'active',notes:'Discovery call in progress',nextAction:'Confirm platform focus and content format',updatedAt:''},
+  ];
+  const all=[...defaults.filter(d=>!camps.find(c=>c.client===d.client)),...camps];
+  if(!all.length){document.getElementById('campaign-list').innerHTML='<div class="empty">No campaigns yet.</div>';return;}
+  document.getElementById('campaign-list').innerHTML=all.map(c=>{
+    const sb=c.status==='active'?'badge-active':c.status==='paused'?'badge-paused':'badge-draft';
+    return`<div class="card">
+      <div class="card-header">
+        <div><div class="card-title">${c.client}</div><div class="card-meta">${c.name||'Campaign'}</div></div>
+        <span class="badge ${sb}">${c.status||'active'}</span>
+      </div>
+      <div class="campaign-stat">
+        <div class="cstat"><div class="cstat-label">Reply rate</div><div class="cstat-value">${c.replyRate?c.replyRate+'%':'—'}</div></div>
+        <div class="cstat"><div class="cstat-label">Updated</div><div class="cstat-value" style="font-size:13px;margin-top:4px;">${c.updatedAt||'—'}</div></div>
+      </div>
+      ${c.notes?`<div class="card-body" style="margin-top:4px;">${c.notes}</div>`:''}
+      ${c.nextAction?`<div style="margin-top:8px;font-size:12px;color:var(--teal);font-family:'DM Mono',monospace;">Next: ${c.nextAction}</div>`:''}
+      <div class="card-actions">
+        <button class="btn btn-accent btn-sm" onclick="prefillCampaignForm('${esc(c.client)}','${esc(c.name)}','${c.replyRate}','${c.status}','${esc(c.notes)}','${esc(c.nextAction)}')">Edit ↗</button>
+        <button class="btn btn-sm" onclick="openClaudeChat('Review this campaign for BoostNumbers.ai client ${esc(c.client)}: ${esc(c.name)}. Reply rate: ${c.replyRate||\"not set\"}%. Notes: ${esc(c.notes)}. Next action: ${esc(c.nextAction)}. What recommendations do you have to improve performance?')">Review ↗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function prefillCampaignForm(client,name,replyRate,status,notes,nextAction){
+  document.getElementById('camp-client').value=client;
+  document.getElementById('camp-name').value=name;
+  document.getElementById('camp-reply').value=replyRate;
+  document.getElementById('camp-status').value=status||'active';
+  document.getElementById('camp-notes').value=notes;
+  document.getElementById('camp-next').value=nextAction;
+  document.getElementById('camp-client').scrollIntoView({behavior:'smooth'});
+}
+async function saveCampaign(){
+  const client=document.getElementById('camp-client').value;
+  const name=document.getElementById('camp-name').value;
+  if(!client||!name){showStatus('Select a client and enter a campaign name.','err');return;}
+  const camp={
+    id:'camp_'+Date.now(),client,name,
+    replyRate:document.getElementById('camp-reply').value,
+    status:document.getElementById('camp-status').value,
+    notes:document.getElementById('camp-notes').value,
+    nextAction:document.getElementById('camp-next').value,
+    updatedAt:new Date().toISOString().split('T')[0]
+  };
+  try{
+    await appendRow(CAMP_SHEET,CAMP_HEADERS,camp);
+    showStatus('Campaign saved.','ok');
+    ['camp-client','camp-name','camp-reply','camp-notes','camp-next'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('camp-status').selectedIndex=0;
+    renderCampaigns();
+  }catch(e){showStatus('Error: '+e.message,'err');}
+}
+
+// ---- TASKS ----
+async function renderTasks(){
+  const tasks=await getRows(TASK_SHEET,TASK_HEADERS);
+  const cf=document.getElementById('task-filter-client').value;
+  const sf=document.getElementById('task-filter-status').value;
+  const filtered=tasks.filter(t=>(!cf||t.client===cf)&&(!sf||t.status===sf));
+  document.getElementById('task-count').textContent=filtered.length+' tasks';
+  if(!filtered.length){document.getElementById('task-list').innerHTML='<div class="empty">No tasks. Add one above.</div>';return;}
+  document.getElementById('task-list').innerHTML=filtered.map(t=>`
+    <div class="task-row">
+      <input type="checkbox" class="task-check" ${t.status==='done'?'checked':''} onchange="toggleTask('${t.id}',this.checked)">
+      <div class="task-text ${t.status==='done'?'done':''}">${t.text}</div>
+      <div class="task-client">${t.client}</div>
+      <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')">×</button>
+    </div>
+  `).join('');
+  document.getElementById('dash-tasks').textContent=tasks.filter(t=>t.status==='todo').length;
+}
+async function addTask(){
+  const client=document.getElementById('task-client').value;
+  const text=document.getElementById('task-text').value.trim();
+  if(!client||!text){showStatus('Select a client and enter a task.','err');return;}
+  const task={id:'task_'+Date.now(),client,text,status:'todo',addedAt:new Date().toISOString().split('T')[0]};
+  await appendRow(TASK_SHEET,TASK_HEADERS,task);
+  document.getElementById('task-text').value='';
+  showStatus('Task added.','ok');
+  renderTasks();
+}
+async function toggleTask(id,done){
+  await updateRow(TASK_SHEET,TASK_HEADERS,id,{status:done?'done':'todo'});
+  renderTasks();
+}
+async function deleteTask(id){
+  await deleteRow(TASK_SHEET,id);
+  showStatus('Task removed.','info');
+  renderTasks();
+}
+
+// ---- CALENDAR ----
+const calData=[
+  {date:'Tue Jun 3, 2025',week:'Wk 1',type:'insight',service:'Podcast production',status:'draft'},
+  {date:'Tue Jun 17, 2025',week:'Wk 3',type:'insight',service:'Content creation',status:'draft'},
+  {date:'Tue Jul 1, 2025',week:'Wk 1',type:'insight',service:'AI tools with Claude',status:'draft'},
+  {date:'Tue Jul 8, 2025',week:'—',type:'offer',service:'LinkedIn growth',status:'draft'},
+  {date:'Tue Jul 15, 2025',week:'Wk 3',type:'insight',service:'Cold email campaigns',status:'draft'},
+  {date:'Tue Aug 5, 2025',week:'Wk 1',type:'insight',service:'Podcast production',status:'draft'},
+  {date:'Tue Aug 19, 2025',week:'Wk 3',type:'insight',service:'Content creation',status:'draft'},
+  {date:'Tue Sep 2, 2025',week:'Wk 1',type:'insight',service:'LinkedIn growth',status:'draft'},
+  {date:'Tue Sep 16, 2025',week:'Wk 3',type:'insight',service:'AI tools with Claude',status:'draft'},
+  {date:'Tue Oct 7, 2025',week:'Wk 1',type:'insight',service:'Cold email campaigns',status:'draft'},
+  {date:'Tue Oct 14, 2025',week:'—',type:'offer',service:'Content creation',status:'draft'},
+  {date:'Tue Oct 21, 2025',week:'Wk 3',type:'insight',service:'Podcast production',status:'draft'},
+];
+function renderCalendar(){
+  document.getElementById('cal-body').innerHTML=calData.map(r=>{
+    const sb=r.status==='ready'?'badge-ready':r.status==='scheduled'?'badge-scheduled':'badge-draft';
+    return`<tr><td>${r.date}</td><td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:10px;">${r.week}</td><td><div class="type-bar-${r.type}">${r.type==='insight'?'Insight':'Offer'}</div></td><td style="font-size:12px;">${r.service}</td><td><span class="badge ${sb}">${r.status}</span></td><td><button class="btn btn-accent btn-sm" onclick="openClaudeChat('Write a LinkedIn ${r.type} post for BoostNumbers.ai. Service angle: ${r.service}. Date: ${r.date}. Audience: small business owners. Tone: founder-to-founder. Goal: client acquisition.')">Draft ↗</button></td></tr>`;
+  }).join('');
+}
+
+// ---- QUEUE ----
+const queuePosts=[
+  {type:'insight',status:'ready',title:'Most small business owners are sending cold emails wrong',body:'The mistake isn\'t the copy. It\'s the list.',service:'Cold email campaigns',date:'Jun 3'},
+  {type:'insight',status:'draft',title:'Your LinkedIn profile is a landing page. Is it working?',body:'Draft in progress.',service:'LinkedIn growth',date:'Jun 17'},
+  {type:'offer',status:'draft',title:'Q3 offer — LinkedIn growth package',body:'Offer post draft pending.',service:'LinkedIn growth',date:'Jul 8'},
+  {type:'insight',status:'draft',title:'How Claude helped us cut content production time in half',body:'Draft pending.',service:'AI tools with Claude',date:'Jul 1'},
+];
+function renderQueue(){
+  const tf=document.getElementById('q-type').value;
+  const sf=document.getElementById('q-status').value;
+  const filtered=queuePosts.filter(p=>(tf==='all'||p.type===tf)&&(sf==='all'||p.status===sf));
+  if(!filtered.length){document.getElementById('queue-list').innerHTML='<div class="empty">No posts match.</div>';return;}
+  document.getElementById('queue-list').innerHTML=filtered.map(p=>{
+    const tb=p.type==='insight'?'badge-insight':'badge-offer';
+    const sb=p.status==='ready'?'badge-ready':p.status==='scheduled'?'badge-scheduled':'badge-draft';
+    return`<div class="card"><div class="card-header"><span class="card-title">${p.title}</span><div style="display:flex;gap:5px;"><span class="badge ${tb}">${p.type}</span><span class="badge ${sb}">${p.status}</span></div></div><div class="card-body">${p.body}</div><div class="card-meta">${p.service} · ${p.date}</div><div class="card-actions"><button class="btn btn-accent btn-sm" onclick="openClaudeChat('Write a complete LinkedIn ${p.type} post for BoostNumbers.ai: ${esc(p.title)}. Service: ${p.service}. Audience: small business owners. Tone: peer-to-peer founder. Hook + insight + takeaway + soft CTA.')">Write post ↗</button><button class="btn btn-sm" onclick="openClaudeChat('Suggest 3 alternative hooks for this LinkedIn post: ${esc(p.title)}')">Alt hooks ↗</button></div></div>`;
+  }).join('');
+}
+
+// ---- PODCAST CHECKLIST ----
+const checklistSteps={
+  'Transcript & prep':[
+    {id:'tx1',text:'Download .txt transcript from Riverside.fm'},
+    {id:'tx2',text:'Upload transcript to BoostNumbers library and tag metadata'},
+    {id:'tx3',text:'Read through and highlight 3–5 key insights'},
+  ],
+  'Clips':[
+    {id:'cl1',text:'Identify 1–2 best clip moments (60–90 sec)'},
+    {id:'cl2',text:'Export clips from Riverside.fm'},
+    {id:'cl3',text:'Add captions to each clip'},
+  ],
+  'LinkedIn content':[
+    {id:'li1',text:'Write LinkedIn insight post using transcript insights'},
+    {id:'li2',text:'Write clip caption for the best short clip'},
+    {id:'li3',text:'Schedule posts in content queue'},
+  ],
+  'Other repurposing':[
+    {id:'ot1',text:'Extract 3 quotable moments for future posts'},
+    {id:'ot2',text:'Note any client pain points mentioned for campaign ideas'},
+    {id:'ot3',text:'Flag any guests to follow up with for services'},
+  ]
+};
+async function populateChecklistEpisodes(){
+  const episodes=await getEpisodes();
+  const sel=document.getElementById('cl-episode');
+  sel.innerHTML='<option value="">Select episode...</option>'+episodes.map(e=>`<option value="${e.id}">Ep. ${e.epnum} — ${e.title}</option>`).join('');
+}
+function loadChecklist(){
+  const epId=document.getElementById('cl-episode').value;
+  if(!epId){document.getElementById('checklist-body').innerHTML='';document.getElementById('checklist-progress').style.display='none';return;}
+  const saved=JSON.parse(localStorage.getItem('cl_'+epId)||'{}');
+  let html='';
+  Object.entries(checklistSteps).forEach(([section,steps])=>{
+    html+=`<div class="checklist-section"><div class="checklist-title">${section}</div>`;
+    steps.forEach(step=>{
+      const checked=saved[step.id]?'checked':'';
+      html+=`<div class="check-item"><input type="checkbox" id="${step.id}_${epId}" ${checked} onchange="saveChecklistItem('${epId}','${step.id}',this.checked)"><label for="${step.id}_${epId}">${step.text}</label></div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('checklist-body').innerHTML=html;
+  document.getElementById('checklist-progress').style.display='block';
+  updateChecklistProgress(epId);
+}
+function saveChecklistItem(epId,stepId,checked){
+  const saved=JSON.parse(localStorage.getItem('cl_'+epId)||'{}');
+  saved[stepId]=checked;
+  localStorage.setItem('cl_'+epId,JSON.stringify(saved));
+  updateChecklistProgress(epId);
+}
+function updateChecklistProgress(epId){
+  const saved=JSON.parse(localStorage.getItem('cl_'+epId)||'{}');
+  const allSteps=Object.values(checklistSteps).flat();
+  const done=allSteps.filter(s=>saved[s.id]).length;
+  const total=allSteps.length;
+  const pct=Math.round(done/total*100);
+  document.getElementById('cl-progress-label').textContent=done+' of '+total+' complete';
+  document.getElementById('cl-progress-fill').style.width=pct+'%';
+}
+function resetChecklist(){
+  const epId=document.getElementById('cl-episode').value;
+  if(!epId)return;
+  if(!confirm('Reset all checklist items for this episode?'))return;
+  localStorage.removeItem('cl_'+epId);
+  loadChecklist();
+}
+
+// ---- CAMPAIGN REVIEW ----
+function openReviewInClaude(mode){
+  const client=document.getElementById('rev-client').value;
+  const period=document.getElementById('rev-period').value;
+  const type=document.getElementById('rev-type').value;
+  const rate=document.getElementById('rev-rate').value;
+  const worked=document.getElementById('rev-worked').value;
+  const didnt=document.getElementById('rev-didnt').value;
+  const feedback=document.getElementById('rev-feedback').value;
+  const next=document.getElementById('rev-next').value;
+  if(!client){showStatus('Select a client first.','err');return;}
+  let prompt;
+  if(mode==='recommendations'){
+    prompt=`Based on this campaign review for BoostNumbers.ai client ${client} (${period}, ${type}): Reply rate: ${rate||'not recorded'}. What worked: ${worked||'not noted'}. What didn't: ${didnt||'not noted'}. Client feedback: ${feedback||'none'}. Proposed next steps: ${next||'none'}. Give me 5 specific, actionable recommendations to improve campaign performance and move toward closing this client on additional services.`;
+  }else{
+    prompt=`Write a structured campaign review summary for BoostNumbers.ai client ${client}. Period: ${period}. Campaign type: ${type}. Reply rate: ${rate||'not recorded'}. What worked: ${worked||'not noted'}. What didn't work: ${didnt||'not noted'}. Client feedback: ${feedback||'none'}. Next steps: ${next||'none'}. Format as a clean client-ready summary with clear sections.`;
+  }
+  openClaudeChat(prompt);
+}
+</script>
+</body>
+</html>
